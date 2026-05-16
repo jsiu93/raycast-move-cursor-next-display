@@ -1,10 +1,3 @@
-/**
- * [INPUT]: Depends on @raycast/api toasts and swift:../swift/movecursor native bridge.
- * [OUTPUT]: Provides runMoveCursor(direction, placement) and showMoveCursorToast(...) for no-view command entrypoints.
- * [POS]: src shared adapter, centralizing Swift bridge invocation, toast feedback, and user-facing errors.
- * [PROTOCOL]: Update this header when changed, then check agents.md
- */
-
 import { showToast, Toast } from "@raycast/api";
 import { moveCursor } from "swift:../swift/movecursor";
 

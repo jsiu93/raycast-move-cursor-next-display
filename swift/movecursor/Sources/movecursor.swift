@@ -1,10 +1,3 @@
-/**
- * [INPUT]: Depends on CoreGraphics display APIs, current mouse event location, and RaycastSwiftMacros.
- * [OUTPUT]: Provides @raycast moveCursor(direction:placement:) for TypeScript commands.
- * [POS]: Native cursor movement engine, owning macOS display geometry and CGWarpMouseCursorPosition.
- * [PROTOCOL]: Update this header when changed, then check agents.md
- */
-
 import CoreGraphics
 import Foundation
 import RaycastSwiftMacros

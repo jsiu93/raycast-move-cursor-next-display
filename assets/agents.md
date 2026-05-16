@@ -1,9 +1,0 @@
-# assets/
-> L2 | Parent: ../agents.md
-
-Member List
-icon.png: Raycast extension icon, packaged asset referenced by package.json.
-
-Rule: Complete Members·One Line Per File·Parent Link·Technical Terms First
-
-[PROTOCOL]: Update this header when changed, then check agents.md

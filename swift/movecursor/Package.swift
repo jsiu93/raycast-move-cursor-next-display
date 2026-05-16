@@ -1,11 +1,4 @@
 // swift-tools-version: 5.9
-/**
- * [INPUT]: Depends on Swift Package Manager and raycast/extensions-swift-tools.
- * [OUTPUT]: Provides the movecursor executable target exported to Raycast TypeScript via Swift plugins.
- * [POS]: swift/movecursor package manifest, defining the native bridge build boundary.
- * [PROTOCOL]: Update this header when changed, then check agents.md
- */
-
 import PackageDescription
 
 let package = Package(
