@@ -72,6 +72,15 @@ The Swift helper is source code under `swift/movecursor`. Raycast builds and inv
    Move Cursor to Previous Display Center
    ```
 
+## Publish
+
+Raycast's publish command copies the extension directory into a fork before opening a Store PR. Clean local Swift build output first:
+
+```bash
+npm run clean:publish
+npm run publish
+```
+
 ## Permissions
 
 The helper uses CoreGraphics and `CGWarpMouseCursorPosition`. If macOS blocks cursor movement, grant permission in:
@@ -86,6 +95,7 @@ Add Raycast while developing.
 
 - Swift bridge build errors: install or update Xcode, then rerun `npm run dev`.
 - `xcodebuild failed to load a required plug-in`: run `xcodebuild -runFirstLaunch`; if it still fails, update or reinstall Xcode.
+- `ENOTSUP ... swift/movecursor/.build/debug`: run `npm run clean:publish`, then publish again.
 - `Only one display detected`: macOS currently reports a single active display.
 - `macOS rejected cursor movement`: grant Accessibility permission to Raycast and try again.
 

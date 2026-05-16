@@ -42,11 +42,12 @@
   ],
   "scripts": {
     "build": "ray build -e dist",
+    "clean:publish": "rm -rf assets/compiled_raycast_swift swift/movecursor/.build swift/movecursor/.raycast-swift-build",
     "dev": "ray develop",
     "lint": "ray lint",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "echo \"\\n\\nUse npm run publish to publish this Raycast extension to the Store.\\n\\n\" && exit 1",
-    "publish": "npx @raycast/api@latest publish"
+    "publish": "npm run clean:publish && npx @raycast/api@latest publish"
   },
   "dependencies": {
     "@raycast/api": "^1.104.17"
