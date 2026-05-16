@@ -4,8 +4,12 @@
   "title": "Move Cursor Displays",
   "description": "Move the macOS mouse cursor between displays with relative-position and center modes.",
   "icon": "icon.png",
-  "author": "joshuasiu",
+  "author": "johnwick",
   "license": "MIT",
+  "permissions": ["execute"],
+  "platforms": ["macOS"],
+  "categories": ["System", "Productivity"],
+  "keywords": ["cursor", "mouse", "display", "monitor", "screen"],
   "commands": [
     {
       "name": "move-cursor-next-display",
@@ -41,7 +45,8 @@
     "dev": "ray develop",
     "lint": "ray lint",
     "typecheck": "tsc --noEmit",
-    "build:helper": "swiftc assets/move-cursor.swift -o assets/move-cursor"
+    "prepublishOnly": "echo \"\\n\\nUse npm run publish to publish this Raycast extension to the Store.\\n\\n\" && exit 1",
+    "publish": "npx @raycast/api@latest publish"
   },
   "dependencies": {
     "@raycast/api": "^1.104.17"

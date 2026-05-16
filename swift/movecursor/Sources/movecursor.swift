@@ -1,13 +1,13 @@
 /**
- * [INPUT]: Depends on CoreGraphics display APIs and current mouse event location.
- * [OUTPUT]: Provides `next|previous [relative|center]` CLI commands that move the cursor across displays.
- * [POS]: Native helper for the Raycast command, owning macOS display geometry and cursor movement.
+ * [INPUT]: Depends on CoreGraphics display APIs, current mouse event location, and RaycastSwiftMacros.
+ * [OUTPUT]: Provides @raycast moveCursor(direction:placement:) for TypeScript commands.
+ * [POS]: Native cursor movement engine, owning macOS display geometry and CGWarpMouseCursorPosition.
  * [PROTOCOL]: Update this header when changed, then check agents.md
  */
 
-import AppKit
 import CoreGraphics
 import Foundation
+import RaycastSwiftMacros
 
 struct Display {
   let id: CGDirectDisplayID
@@ -44,27 +44,19 @@ enum Placement: String {
   case center
 }
 
-enum HelperError: Error {
-  case usage
+enum MoveCursorError: LocalizedError {
+  case invalidDirection
+  case invalidPlacement
   case noDisplays
   case noMouseLocation
   case warpFailed(CGError)
 
-  var exitCode: Int32 {
+  var errorDescription: String? {
     switch self {
-    case .usage:
-      return 64
-    case .noDisplays, .noMouseLocation:
-      return 70
-    case .warpFailed:
-      return 71
-    }
-  }
-
-  var message: String {
-    switch self {
-    case .usage:
-      return "Usage: move-cursor next|previous [relative|center]"
+    case .invalidDirection:
+      return "Unknown cursor direction."
+    case .invalidPlacement:
+      return "Unknown cursor placement mode."
     case .noDisplays:
       return "No active displays were detected."
     case .noMouseLocation:
@@ -75,20 +67,15 @@ enum HelperError: Error {
   }
 }
 
-func writeError(_ message: String) {
-  let data = Data((message + "\n").utf8)
-  FileHandle.standardError.write(data)
-}
-
 func activeDisplays() throws -> [Display] {
   var count: UInt32 = 0
   guard CGGetActiveDisplayList(0, nil, &count) == .success else {
-    throw HelperError.noDisplays
+    throw MoveCursorError.noDisplays
   }
 
   var ids = [CGDirectDisplayID](repeating: 0, count: Int(count))
   guard CGGetActiveDisplayList(count, &ids, &count) == .success else {
-    throw HelperError.noDisplays
+    throw MoveCursorError.noDisplays
   }
 
   return ids.prefix(Int(count)).compactMap { id in
@@ -100,7 +87,7 @@ func activeDisplays() throws -> [Display] {
 
 func currentMouseLocation() throws -> CGPoint {
   guard let event = CGEvent(source: nil) else {
-    throw HelperError.noMouseLocation
+    throw MoveCursorError.noMouseLocation
   }
 
   return event.location
@@ -173,9 +160,18 @@ func destinationPoint(_ point: CGPoint, from source: CGRect, to target: CGRect, 
   }
 }
 
-func moveCursor(_ direction: Direction, placement: Placement) throws -> String {
+@raycast
+func moveCursor(direction directionValue: String, placement placementValue: String) throws -> String {
+  guard let direction = Direction(rawValue: directionValue) else {
+    throw MoveCursorError.invalidDirection
+  }
+
+  guard let placement = Placement(rawValue: placementValue) else {
+    throw MoveCursorError.invalidPlacement
+  }
+
   let displays = sortedDisplays(try activeDisplays())
-  guard !displays.isEmpty else { throw HelperError.noDisplays }
+  guard !displays.isEmpty else { throw MoveCursorError.noDisplays }
   guard displays.count > 1 else { return "Only one display detected." }
 
   let mouse = try currentMouseLocation()
@@ -185,36 +181,8 @@ func moveCursor(_ direction: Direction, placement: Placement) throws -> String {
   let result = CGWarpMouseCursorPosition(destination)
 
   guard result == .success else {
-    throw HelperError.warpFailed(result)
+    throw MoveCursorError.warpFailed(result)
   }
 
   return direction.successMessage(placement: placement)
-}
-
-func run(arguments: [String]) throws -> String {
-  guard arguments.count == 2 || arguments.count == 3 else {
-    throw HelperError.usage
-  }
-
-  guard let direction = Direction(rawValue: arguments[1]) else {
-    throw HelperError.usage
-  }
-
-  let placement = arguments.count == 3 ? Placement(rawValue: arguments[2]) : .relative
-  guard let placement else {
-    throw HelperError.usage
-  }
-
-  return try moveCursor(direction, placement: placement)
-}
-
-do {
-  print(try run(arguments: CommandLine.arguments))
-  exit(0)
-} catch let error as HelperError {
-  writeError(error.message)
-  exit(error.exitCode)
-} catch {
-  writeError("Unexpected cursor movement failure.")
-  exit(1)
 }

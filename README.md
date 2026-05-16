@@ -1,6 +1,6 @@
 # Move Cursor Displays
 
-Raycast extension plus a local Swift helper binary for moving the macOS mouse cursor between displays. The commands have no UI: run one command and the cursor jumps immediately.
+Raycast extension plus a Swift helper, connected through Raycast's official Swift bridge, for moving the macOS mouse cursor between displays. The commands have no UI: run one command and the cursor jumps immediately.
 
 ## What It Does
 
@@ -18,44 +18,44 @@ Raycast extension plus a local Swift helper binary for moving the macOS mouse cu
 ```text
 .
 ├── assets
-│   ├── icon.png
-│   └── move-cursor.swift
+│   └── icon.png
 ├── src
 │   ├── move-cursor-command.ts
 │   ├── move-cursor-next-display-center.ts
 │   ├── move-cursor-next-display.ts
 │   ├── move-cursor-previous-display-center.ts
-│   └── move-cursor-previous-display.ts
+│   ├── move-cursor-previous-display.ts
+│   └── swift-bridge.d.ts
+├── swift
+│   └── movecursor
+│       ├── Package.swift
+│       └── Sources
+│           └── movecursor.swift
+├── CHANGELOG.md
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-`assets/move-cursor.swift` is source code. Compile it into `assets/move-cursor`, which is what the Raycast commands execute.
+The Swift helper is source code under `swift/movecursor`. Raycast builds and invokes it through `swift:../swift/movecursor`; no checked-in native binary is required.
 
 ## Setup
 
-1. Create a Raycast extension:
+1. Install Xcode. Raycast's Swift bridge currently requires Xcode to build Swift packages.
+
+2. Create a Raycast extension:
 
    ```bash
    npm create raycast-extension@latest
    ```
 
-2. Choose a no-view TypeScript extension, then replace the generated files with this project's files.
+3. Choose a no-view TypeScript extension, then replace the generated files with this project's files.
 
-3. Install dependencies:
+4. Install dependencies:
 
    ```bash
    npm install
    ```
-
-4. Compile the Swift helper:
-
-   ```bash
-   npm run build:helper
-   ```
-
-   This creates `assets/move-cursor`. The TypeScript command expects the executable at exactly that path inside Raycast's bundled assets directory.
 
 5. Run the extension in Raycast development mode:
 
@@ -80,18 +80,18 @@ The helper uses CoreGraphics and `CGWarpMouseCursorPosition`. If macOS blocks cu
 System Settings > Privacy & Security > Accessibility
 ```
 
-Add Raycast while developing. If running the helper directly from Terminal, add your terminal app too.
+Add Raycast while developing.
 
 ## Common Failures
 
-- `Helper binary is missing`: run `npm run build:helper`.
-- `Helper binary is not executable`: run `chmod +x assets/move-cursor`.
+- Swift bridge build errors: install or update Xcode, then rerun `npm run dev`.
+- `xcodebuild failed to load a required plug-in`: run `xcodebuild -runFirstLaunch`; if it still fails, update or reinstall Xcode.
 - `Only one display detected`: macOS currently reports a single active display.
 - `macOS rejected cursor movement`: grant Accessibility permission to Raycast and try again.
 
 ## Notes
 
-Bundling a native executable in a Raycast extension is useful for personal workflows, but it can complicate distribution and review. For local use, keeping the compiled helper in `assets/move-cursor` is straightforward. For public distribution, verify Raycast Store policy and signing/notarization expectations before shipping.
+The extension uses Raycast's Swift bridge instead of checking in a prebuilt native executable. That keeps the native code reviewable and avoids binary architecture/signing drift during Store review.
 
 ## Next Steps
 

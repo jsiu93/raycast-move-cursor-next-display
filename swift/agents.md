@@ -1,8 +1,8 @@
-# assets/
+# swift/
 > L2 | Parent: ../agents.md
 
 Member List
-icon.png: Raycast extension icon, packaged asset referenced by package.json.
+movecursor/: SwiftPM package exporting native cursor movement to Raycast TypeScript through the official Swift bridge.
 
 Rule: Complete Members·One Line Per File·Parent Link·Technical Terms First
 
