@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.raycast/
+assets/move-cursor
+package-lock.json
+raycast-env.d.ts
+*.log
