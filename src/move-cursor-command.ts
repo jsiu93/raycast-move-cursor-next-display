@@ -4,12 +4,8 @@ import { moveCursor } from "swift:../swift/movecursor";
 export type MoveDirection = "next" | "previous";
 export type MovePlacement = "relative" | "center";
 
-function fallbackMessage(direction: MoveDirection, placement: MovePlacement): string {
-  return placement === "center" ? `Cursor moved to ${direction} display center.` : `Cursor moved to ${direction} display.`;
-}
-
 export async function runMoveCursor(direction: MoveDirection, placement: MovePlacement = "relative"): Promise<string> {
-  return (await Promise.resolve(moveCursor(direction, placement))) || fallbackMessage(direction, placement);
+  return await moveCursor(direction, placement);
 }
 
 export function messageFor(error: unknown): string {

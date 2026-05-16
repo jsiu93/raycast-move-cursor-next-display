@@ -54,8 +54,8 @@ enum MoveCursorError: LocalizedError {
       return "No active displays were detected."
     case .noMouseLocation:
       return "Could not read the current mouse position."
-    case .warpFailed:
-      return "macOS rejected cursor movement. Grant Accessibility permission to Raycast and try again."
+    case .warpFailed(let code):
+      return "macOS rejected cursor movement (CGError \(code.rawValue)). Grant Accessibility permission to Raycast and try again."
     }
   }
 }
